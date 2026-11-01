@@ -1,0 +1,6 @@
+@import "datatables.net-dt/css/dataTables.dataTables.css";
+@import "datatables.net-buttons-dt/css/buttons.dataTables.css";
+@import "datatables.net-colreorder-dt/css/colReorder.dataTables.css";
+@import "datatables.net-responsive-dt/css/responsive.dataTables.css";
+@import "datatables.net-rowreorder-dt/css/rowReorder.dataTables.css";
+@import "datatables.net-select-dt/css/select.dataTables.css";

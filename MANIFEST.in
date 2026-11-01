@@ -1,0 +1,4 @@
+include LICENSE
+include README.md
+recursive-include datatables_listview/static *
+recursive-include datatables_listview/templates *

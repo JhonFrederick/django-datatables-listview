@@ -90,3 +90,10 @@ ENV/
 
 # Pycharm
 .idea/
+
+# Node
+node_modules/
+npm-debug.log*
+
+# Virtual environment
+.venv/
