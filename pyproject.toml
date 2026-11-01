@@ -32,3 +32,12 @@ include = ["datatables_listview*"]
     "static/**/*",
     "templates/**/*",
 ]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.2.0",
+    "pytest-django>=4.14.0",
+]
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "datatables_listview.tests.testsettings"

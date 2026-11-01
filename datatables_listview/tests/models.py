@@ -2,59 +2,58 @@ from django.db import models
 
 
 class TestCat(models.Model):
-    """
-    Author: Milton Lenis
-    Date: 16 April 2017
-    Model to represent a Test Dog, just for test purposes
-    """
+    __test__ = False
     name = models.CharField(max_length=30)
-    hate_level = models.IntegerField()
+    hate_level = models.IntegerField(default=0)
+
+    def __str__(self):
+        return self.name
 
 
 class TestDog(models.Model):
-    """
-    Author: Milton Lenis
-    Date: 16 April 2017
-    Model to represent a Test Cat, just for test purposes
-    """
+    __test__ = False
     name = models.CharField(max_length=30)
-    age = models.IntegerField()
+    age = models.IntegerField(default=1)
+
+    def __str__(self):
+        return self.name
 
 
 class TestPerson(models.Model):
-    """
-    Author: Milton Lenis
-    Date: 16 April 2017
-    Model to represent a Test Person, just for test purposes
-    """
+    __test__ = False
     GENDERS = (
-        (0, 'MALE'),
-        (1, 'FEMALE')
+        (0, "MALE"),
+        (1, "FEMALE"),
     )
     name = models.CharField(max_length=30)
     birth_date = models.DateField(auto_now_add=True)
-    gender = models.IntegerField(choices=GENDERS)
-    test_bigautofield = models.BigAutoField()
-    test_bigintegerfield = models.BigAutoField()
-    test_booleanfield = models.BooleanField()
-    test_datetimefield = models.DateTimeField()
-    test_decimalfield = models.DecimalField(max_digits=2, decimal_places=3)
-    test_durationfield = models.DurationField()
-    test_emailfield = models.EmailField()
-    test_filefield = models.FileField()
-    test_filepathfield = models.FilePathField(path='test/files')
-    test_floatfield = models.FloatField()
-    test_imagefield = models.ImageField()
-    test_genericipaddressfield = models.GenericIPAddressField()
-    test_nullbooleanfield = models.NullBooleanField()
-    test_positiveintegerfield = models.PositiveIntegerField()
-    test_positivesmallintegerfield = models.PositiveSmallIntegerField()
-    test_slugfield = models.SlugField()
-    test_smallintegerfield = models.SmallIntegerField()
-    test_textfield = models.TextField()
-    test_timefield = models.TimeField()
-    test_urlfield = models.URLField()
-    test_uuidfield = models.UUIDField()
-    dog = models.ForeignKey(TestDog)
-    cats = models.ManyToManyField(TestCat)
+    gender = models.IntegerField(choices=GENDERS, default=0)
+    dog = models.ForeignKey(TestDog, on_delete=models.CASCADE, null=True, blank=True)
+    cats = models.ManyToManyField(TestCat, blank=True)
 
+    def __str__(self):
+        return self.name
+
+    @property
+    def custom_status(self):
+        return f"Status: {self.name}"
+
+
+class TestProfile(models.Model):
+    __test__ = False
+    person = models.OneToOneField(
+        TestPerson, on_delete=models.CASCADE, related_name="profile"
+    )
+    bio = models.TextField(blank=True, default="")
+
+    def __str__(self):
+        return f"Profile of {self.person.name}"
+
+
+class TestToy(models.Model):
+    __test__ = False
+    owner = models.ForeignKey(TestPerson, on_delete=models.CASCADE, related_name="toys")
+    toy_name = models.CharField(max_length=50)
+
+    def __str__(self):
+        return self.toy_name
