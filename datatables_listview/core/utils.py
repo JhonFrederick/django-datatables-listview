@@ -1,13 +1,20 @@
 from collections import namedtuple
 from django.conf import settings
+from django.contrib.staticfiles import finders
 from django.core.exceptions import (
     FieldDoesNotExist,
     ImproperlyConfigured,
     ObjectDoesNotExist,
 )
+from django.templatetags.static import static
 
-BOOTSTRAP_VERSIONS = ("4", "5")
-DEFAULT_BOOTSTRAP_VERSION = "5"
+from datatables_listview.core.constants import (
+    DEFAULT_BOOTSTRAP_VERSION,
+    BOOTSTRAP_VERSIONS,
+    DEFAULT_LANGUAGE_ALIASES,
+    FALLBACK_LANGUAGE_FILE,
+    DATATABLES_I18N_DIR,
+)
 
 Draw = namedtuple(
     "Draw", ["start", "end", "sort_column", "sort_order", "search", "draw", "filter"]
@@ -37,6 +44,55 @@ def get_bootstrap_version():
             "not %(value)r" % {"versions": BOOTSTRAP_VERSIONS, "value": version}
         )
     return version
+
+
+def _normalize_language_code(language_code):
+    return (language_code or "").replace("_", "-").lower()
+
+
+def get_datatables_language_candidates(language_code):
+    """
+    Static paths of the DataTables language files to try, in order, for a
+    Django language code (e.g. "es-mx" → es-MX, es, es-ES, en-GB).
+    """
+    lang, _, region = _normalize_language_code(language_code).partition("-")
+    names = []
+    if lang and region:
+        names.append(f"{lang}-{region.upper()}")
+    if lang:
+        names.append(lang)
+        if lang in DEFAULT_LANGUAGE_ALIASES:
+            names.append(DEFAULT_LANGUAGE_ALIASES[lang])
+        names.append(f"{lang}-{lang.upper()}")  # fr → fr-FR, de → de-DE...
+    names.append(FALLBACK_LANGUAGE_FILE)
+    return [f"{DATATABLES_I18N_DIR}/{name}.json" for name in dict.fromkeys(names)]
+
+
+def get_datatables_language_url(language_code):
+    """
+    Static URL of the DataTables language file for a Django language code.
+
+    1. settings.DATATABLES_LISTVIEW_LANGUAGE_FILES ({"es-mx": "app/es.json"}),
+       by exact code and then by base language.
+    2. The files shipped in datatables_listview/i18n/ (first one that exists).
+
+    Returns None when no file is found (DataTables then uses its default).
+    """
+    code = _normalize_language_code(language_code)
+    custom = {
+        _normalize_language_code(key): path
+        for key, path in getattr(
+            settings, "DATATABLES_LISTVIEW_LANGUAGE_FILES", {}
+        ).items()
+    }
+    for key in (code, code.split("-")[0]):
+        if key in custom:
+            return static(custom[key])
+
+    for path in get_datatables_language_candidates(language_code):
+        if finders.find(path):
+            return static(path)
+    return None
 
 
 def get_field_name(field):

@@ -8,6 +8,8 @@ from datatables_listview.core.utils import (
     arrayfield_keys_to_values,
     create_column_defs_list,
     get_bootstrap_version,
+    get_datatables_language_candidates,
+    get_datatables_language_url,
     get_field_name,
     is_ajax,
     resolve_field_path,
@@ -20,6 +22,8 @@ from datatables_listview.tests.models import (
     TestProfile,
     TestToy,
 )
+
+I18N = "datatables_listview/i18n"
 
 
 class TestDraw:
@@ -55,6 +59,92 @@ class TestGetBootstrapVersion:
         setattr(settings, self.SETTING, value)
         with pytest.raises(ImproperlyConfigured):
             get_bootstrap_version()
+
+
+class TestGetDatatablesLanguageCandidates:
+    """Order of the language files that are tested for a Django code."""
+
+    @pytest.mark.parametrize(
+        "code, expected",
+        [
+            ("es-mx", ["es-MX", "es", "es-ES", "en-GB"]),
+            ("es", ["es", "es-MX", "es-ES", "en-GB"]),
+            ("en-us", ["en-US", "en", "en-GB", "en-EN"]),
+            ("fr", ["fr", "fr-FR", "en-GB"]),
+            ("pt_BR", ["pt-BR", "pt", "pt-PT", "en-GB"]),
+            ("", ["en-GB"]),
+            (None, ["en-GB"]),
+        ],
+    )
+    def test_candidates(self, code, expected):
+        assert get_datatables_language_candidates(code) == [
+            f"{I18N}/{name}.json" for name in expected
+        ]
+
+
+class TestGetDatatablesLanguageUrl:
+    """Real resolution against a temporary static directory."""
+
+    @pytest.fixture
+    def add_i18n(self, tmp_path, settings):
+        settings.STATIC_URL = "/static/"
+        settings.STATICFILES_DIRS = [str(tmp_path)]
+        settings.STATICFILES_FINDERS = [
+            "django.contrib.staticfiles.finders.FileSystemFinder"
+        ]
+        folder = tmp_path / I18N
+        folder.mkdir(parents=True)
+
+        def _add(*names):
+            for name in names:
+                (folder / f"{name}.json").write_text("{}")
+
+        return _add
+
+    @staticmethod
+    def url(name):
+        return f"/static/{I18N}/{name}.json"
+
+    def test_exact_region(self, add_i18n):
+        add_i18n("es-MX", "es-ES")
+        assert get_datatables_language_url("es-es") == self.url("es-ES")
+
+    def test_language_only_uses_the_default_alias(self, add_i18n):
+        add_i18n("es-MX", "es-ES")
+        assert get_datatables_language_url("es") == self.url("es-MX")
+
+    def test_region_without_file_falls_back_to_the_language(self, add_i18n):
+        add_i18n("en-GB")
+        assert get_datatables_language_url("en-us") == self.url("en-GB")
+
+    def test_language_with_same_region_code(self, add_i18n):
+        add_i18n("fr-FR", "en-GB")
+        assert get_datatables_language_url("fr") == self.url("fr-FR")
+
+    @pytest.mark.parametrize("code", ["xx", "", None])
+    def test_unknown_language_falls_back_to_english(self, add_i18n, code):
+        add_i18n("en-GB")
+        assert get_datatables_language_url(code) == self.url("en-GB")
+
+    def test_returns_none_when_there_are_no_files(self, add_i18n):
+        assert get_datatables_language_url("es") is None
+
+    def test_custom_file_by_exact_code_wins(self, add_i18n, settings):
+        add_i18n("es-MX")
+        settings.DATATABLES_LISTVIEW_LANGUAGE_FILES = {
+            "es-mx": "proyecto/es-mx.json",
+            "es": "proyecto/es.json",
+        }
+        assert get_datatables_language_url("es-MX") == "/static/proyecto/es-mx.json"
+
+    def test_custom_file_by_base_language(self, add_i18n, settings):
+        add_i18n("es-MX")
+        settings.DATATABLES_LISTVIEW_LANGUAGE_FILES = {"es": "proyecto/es.json"}
+        assert get_datatables_language_url("es-ar") == "/static/proyecto/es.json"
+
+    def test_custom_keys_are_normalized(self, add_i18n, settings):
+        settings.DATATABLES_LISTVIEW_LANGUAGE_FILES = {"PT_BR": "proyecto/pt.json"}
+        assert get_datatables_language_url("pt-br") == "/static/proyecto/pt.json"
 
 
 class TestIsAjax:

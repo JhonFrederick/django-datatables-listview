@@ -3,11 +3,13 @@ from django.db.models import Q, CharField, TextField
 from django.http import JsonResponse
 from django.template.loader import render_to_string
 from django.urls import reverse
+from django.utils.translation import get_language
 
 from datatables_listview.core.constants import DatatableOrderConstants
 from datatables_listview.core.utils import (
     create_column_defs_list,
     get_bootstrap_version,
+    get_datatables_language_url,
     get_field_name,
     is_ajax,
     resolve_field_path,
@@ -483,6 +485,7 @@ class DatatablesListView:
         context["show_buttons"] = self.show_buttons
         context["datatables_theme"] = getattr(self, "theme", "default")
         context["bootstrap_version"] = get_bootstrap_version()
+        context["datatables_language_url"] = get_datatables_language_url(get_language())
         context["default_column_order"] = [
             self.default_column_order_index,
             self.default_column_order_direction,

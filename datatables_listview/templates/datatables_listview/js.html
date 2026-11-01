@@ -1,15 +1,15 @@
-{% load static %}
+{% load static i18n %}
 {{ column_defs|json_script:'column-def' }}
-<script type="text/javascript">
-let column_defs = JSON.parse(document.getElementById('column-def').textContent);
-let options = {{ show_options|yesno:"true,false" }}
+{{ default_column_order|json_script:'default-column-order' }}
+{{ datatables_language_url|json_script:'datatables-language-url' }}
+<script>
+    let column_defs = JSON.parse(document.getElementById('column-def').textContent);
+    let options = {{ show_options|yesno:"true,false" }};
+    const bootstrap_version = "{{ bootstrap_version }}";
+
+    let cdn_language = JSON.parse(document.getElementById('datatables-language-url').textContent);
+    const title_column_options = "{% trans 'Options' %}";
+    let default_column_order  = JSON.parse(document.getElementById('default-column-order').textContent);
 </script>
-{% if datatables_theme == "bootstrap4" or datatables_theme == "bs4" %}
-<script src="{% static 'datatables_listview/js/datatables.bs4.min.js' %}"></script>
-{% elif datatables_theme == "bootstrap5" or datatables_theme == "bs5" or use_bootstrap %}
-<script src="{% static 'datatables_listview/js/datatables.bs5.min.js' %}"></script>
-{% else %}
-<script src="{% static 'datatables_listview/js/datatables.min.js' %}"></script>
-{% endif %}
-<script src="{% static 'datatables_listview/js/datatables_pipeline.js' %}"></script>
-<script src="{% static 'datatables_listview/js/generate_datatable.js' %}"></script>
+<script type="text/javascript" src="{% static 'datatables_listview/js/datatables_pipeline.js' %}"></script>
+<script type="text/javascript" src="{% static 'datatables_listview/js/generate_datatable.js' %}"></script>
