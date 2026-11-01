@@ -4,6 +4,12 @@
 let column_defs = JSON.parse(document.getElementById('column-def').textContent);
 let options = {{ show_options|yesno:"true,false" }}
 </script>
+{% if datatables_theme == "bootstrap4" or datatables_theme == "bs4" %}
+<script src="{% static 'datatables_listview/js/datatables.bs4.min.js' %}"></script>
+{% elif datatables_theme == "bootstrap5" or datatables_theme == "bs5" or use_bootstrap %}
+<script src="{% static 'datatables_listview/js/datatables.bs5.min.js' %}"></script>
+{% else %}
 <script src="{% static 'datatables_listview/js/datatables.min.js' %}"></script>
+{% endif %}
 <script src="{% static 'datatables_listview/js/datatables_pipeline.js' %}"></script>
 <script src="{% static 'datatables_listview/js/generate_datatable.js' %}"></script>

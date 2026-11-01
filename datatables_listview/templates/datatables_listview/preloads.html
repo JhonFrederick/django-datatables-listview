@@ -1,3 +1,9 @@
 {% load static %}
+{% if datatables_theme == "bootstrap4" or datatables_theme == "bs4" %}
+<link rel="preload" as="style" href="{% static 'datatables_listview/css/datatables.bs4.min.css' %}" crossorigin>
+{% elif datatables_theme == "bootstrap5" or datatables_theme == "bs5" or use_bootstrap %}
+<link rel="preload" as="style" href="{% static 'datatables_listview/css/datatables.bs5.min.css' %}" crossorigin>
+{% else %}
 <link rel="preload" as="style" href="{% static 'datatables_listview/css/datatables.min.css' %}" crossorigin>
 <link rel="preload" as="style" href="{% static 'datatables_listview/css/datatables_custom.css' %}" crossorigin>
+{% endif %}
