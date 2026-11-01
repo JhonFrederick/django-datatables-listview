@@ -1,0 +1,288 @@
+{
+    "aria": {
+        "orderable": "Activează pentru sortare",
+        "orderableRemove": "Activează pentru eliminarea sortării",
+        "orderableReverse": "Activează pentru inversarea sortării",
+        "paginate": {
+            "first": "Prima pagină",
+            "last": "Ultima pagină",
+            "next": "Pagina următoare",
+            "previous": "Pagina precedentă"
+        }
+    },
+    "autoFill": {
+        "cancel": "Anulează",
+        "fill": "Completează toate celulele cu <i>%d<\/i>",
+        "fillHorizontal": "Completeză celulele orizonal",
+        "fillVertical": "Completează celulele vertical",
+        "info": ""
+    },
+    "buttons": {
+        "collection": "Colecție <span class=\"ui-button-icon-primary ui-icon ui-icon-triangle-1-s\"><\/span>",
+        "colvis": "Vizibilitate coloane",
+        "colvisRestore": "Resetează vizibilitatea",
+        "copy": "Copiază",
+        "copyKeys": "Apasă ctrl sau u2318 + C pentru a copia datele din tabel în clipboard-ul sistemului.<br \/><br \/>Pentru a anula, dați clic pe acest mesaj sau apăsați pe Escape.",
+        "copySuccess": {
+            "_": "S-au copiat %ds rânduri în clipboard",
+            "1": "S-a copiat un rând în clipboard"
+        },
+        "copyTitle": "Copiază în Clipboard",
+        "csv": "CSV",
+        "excel": "Excel",
+        "pageLength": {
+            "_": "Arată %d rânduri",
+            "-1": "Arată toate rândurile",
+            "1": "Arată 1 rând"
+        },
+        "pdf": "PDF",
+        "print": "Imprimă"
+    },
+    "columnControl": {
+        "buttons": {
+            "searchClear": "Elimină căutarea"
+        },
+        "colVis": "Vizibilitate coloane",
+        "colVisDropdown": "Vizibilitate coloane",
+        "dropdown": "Mai multe...",
+        "list": {
+            "all": "Selectează tot",
+            "none": "Deselectează tot",
+            "search": "Căutare..."
+        },
+        "orderAddAsc": "Adaugă sortare crescătoare",
+        "orderAddDesc": "Adaugă sortare descrescătoare",
+        "orderAsc": "Sortează ascendent ",
+        "orderClear": "Curăță sortarea",
+        "orderDesc": "Sortează descendent",
+        "orderRemove": "Elimină din sortare",
+        "reorder": "Reordonează coloanele",
+        "reorderLeft": "Mută coloana la stânga",
+        "reorderRight": "Mută coloana la dreapta",
+        "search": {
+            "datetime": {
+                "greater": "După",
+                "less": "Înainte"
+            },
+            "number": {
+                "empty": "Gol",
+                "equal": "Egal",
+                "greater": "Mai mare ca",
+                "greaterOrEqual": "Mai mare sau egal",
+                "less": "Mai mic ca",
+                "lessOrEqual": "Mai mic sau egal",
+                "notEmpty": "Nu este gol",
+                "notEqual": "Nu este egal"
+            },
+            "text": {
+                "contains": "Conține",
+                "ends": "Se termină cu",
+                "notContains": "Nu conține",
+                "starts": "Începe cu"
+            }
+        },
+        "searchClear": "Curăță căutarea",
+        "searchDropdown": "Căutare"
+    },
+    "datetime": {
+        "amPm": {
+            "0": "AM",
+            "1": "PM"
+        },
+        "hours": "Ore",
+        "minutes": "Minute",
+        "months": {
+            "0": "Ianuarie",
+            "1": "Februarie",
+            "10": "Noiembrie",
+            "11": "Decembrie",
+            "2": "Martie",
+            "3": "Aprilie",
+            "4": "Mai",
+            "5": "Iunie",
+            "6": "Iulie",
+            "7": "August",
+            "8": "Septembrie",
+            "9": "Octombrie"
+        },
+        "next": "Următoare",
+        "previous": "Precedentă",
+        "seconds": "Secunde",
+        "unknown": "Necunoscut",
+        "weekdays": {
+            "0": "Lun",
+            "1": "Mar",
+            "2": "Mie",
+            "3": "Joi",
+            "4": "Vin",
+            "5": "Sâm",
+            "6": "Dum"
+        }
+    },
+    "decimal": "",
+    "editor": {
+        "close": "Închide",
+        "create": {
+            "button": "Nou",
+            "submit": "Creează",
+            "title": "Creează o intrare nouă"
+        },
+        "edit": {
+            "button": "Editează",
+            "submit": "Editează",
+            "title": "Editează rândul"
+        },
+        "error": {
+            "system": "A apărut o eroare de sistem (Mai multe informatii)."
+        },
+        "multi": {
+            "info": "Elementele selectate conțin valori diferite pentru această intrare. Pentru a edita și a seta toate elementele pentru această intrare la aceeași valoare, faceți clic sau atingeți aici, altfel își vor păstra valorile individuale.",
+            "noMulti": "Această intrare poate fi editată individual, dar nu face parte dintr-un grup.",
+            "restore": "Anulează modificările",
+            "title": "Valori multiple"
+        },
+        "remove": {
+            "button": "Șterge",
+            "confirm": {
+                "_": "Sigur dorești să ștergi %d rânduri?",
+                "1": "Sigur dorești să ștergi 1 rând?"
+            },
+            "submit": "Șterge",
+            "title": "Șterge"
+        }
+    },
+    "emptyTable": "Nu există date în tabel",
+    "info": "Afișate de la _START_ la _END_ din _TOTAL_ înregistrări",
+    "infoEmpty": "Afișate de la 0 la 0 din 0 înregistrări",
+    "infoFiltered": "(filtrate dintr-un total de _MAX_ înregistrări)",
+    "infoPostFix": "",
+    "infoThousands": ".",
+    "lengthLabels": {
+        "-1": "Toate"
+    },
+    "lengthMenu": "Afișează _MENU_ înregistrări pe pagină",
+    "loadingRecords": "Se încarcă...",
+    "orderClear": "Elimină sortarea",
+    "processing": "Se procesează...",
+    "search": "Caută:",
+    "searchBuilder": {
+        "add": "Adaugă o condiție",
+        "button": {
+            "_": "Generator de căutare (%d)",
+            "0": "Generator de căutare"
+        },
+        "clearAll": "Șterge tot",
+        "condition": "Condiție",
+        "conditions": {
+            "array": {
+                "contains": "Conține",
+                "empty": "Gol",
+                "equals": "Egal cu",
+                "not": "Nu este",
+                "notEmpty": "Nu este gol",
+                "without": "Fără"
+            },
+            "date": {
+                "after": "După",
+                "before": "Înainte de",
+                "between": "Între",
+                "empty": "Gol",
+                "equals": "Egal",
+                "not": "Nu este",
+                "notBetween": "Nu este între",
+                "notEmpty": "Nu este goală"
+            },
+            "number": {
+                "between": "Între",
+                "empty": "Gol",
+                "equals": "Egal",
+                "gt": "Mai mare de",
+                "gte": "Mai mare sau egal cu",
+                "lt": "Mai puțin de",
+                "lte": "Mai puțin sau egal cu",
+                "not": "Nu este",
+                "notBetween": "Nu este între",
+                "notEmpty": "Nu este gol"
+            },
+            "string": {
+                "contains": "Conține",
+                "empty": "Este gol",
+                "endsWith": "Se termină cu",
+                "equals": "Este la fel cu",
+                "not": "Nu este",
+                "notContains": "Nu conține",
+                "notEmpty": "Nu este gol",
+                "notEndsWith": "Nu se termină cu",
+                "notStartsWith": "Nu începe cu",
+                "startsWith": "Începe cu"
+            }
+        },
+        "data": "Date",
+        "deleteTitle": "Șterge regula de filtrare",
+        "leftTitle": "Criterii Outdent",
+        "logicAnd": "Și",
+        "logicOr": "Sau",
+        "rightTitle": "Criterii de indentare",
+        "search": "Caută",
+        "title": {
+            "_": "Generator de căutare (%d)",
+            "0": "Generator de căutare"
+        },
+        "value": "Valoare",
+        "valueJoiner": "și"
+    },
+    "searchPanes": {
+        "clearMessage": "Șterge tot",
+        "collapse": {
+            "_": "Panou căutare (%d)",
+            "0": "Panou căutare"
+        },
+        "collapseMessage": "Închide toate",
+        "count": "{total}",
+        "countFiltered": "{shown} ({total})",
+        "emptyMessage": "&lt;em&gt;Gol&lt;\/em&gt;",
+        "emptyPanes": "Fără panouri de căutare",
+        "loadMessage": "Încarcă panouri de căutare",
+        "showMessage": "Arată toate",
+        "title": "Filtre Activ - %d"
+    },
+    "searchPlaceholder": "",
+    "select": {
+        "cells": {
+            "_": "%d celule selectate",
+            "0": "",
+            "1": "1 celulă selectată"
+        },
+        "columns": {
+            "_": "%d coloane selectate",
+            "0": "",
+            "1": "1 coloană selectată"
+        },
+        "rows": {
+            "_": "%d rânduri selectate",
+            "0": "",
+            "1": "1 rând selectat"
+        }
+    },
+    "stateRestore": {
+        "button": {
+            "create": "Creează Stare",
+            "edit": "Actualizează",
+            "remove": "Elimină",
+            "statesList": "Salvează Stările",
+            "statesRemoveAll": "Elimină Toate Stările"
+        },
+        "create": {
+            "title": "Creează o nouă Stare"
+        },
+        "remove": {
+            "button": "Șterge",
+            "message": {
+                "_": "Sunteți sigur că vreți sa ștergeți %s?"
+            },
+            "title": "Sterge Starea"
+        }
+    },
+    "thousands": ".",
+    "zeroRecords": "Nu am găsit nimic - ne pare rău"
+}

@@ -1,0 +1,14 @@
+{% load i18n %}
+
+<div class="btn-group">
+  <button class="btn btn-secondary btn-sm dropdown-toggle" type="button"
+          data-bs-toggle="dropdown" aria-expanded="false"
+          aria-label="{% trans 'Options' %}">
+    <i class="bi bi-gear text-dark fs-5" aria-hidden="true"></i>
+  </button>
+  <ul class="dropdown-menu">
+    {% for url in urls %}
+      {{ url }}
+    {% endfor %}
+  </ul>
+</div>

@@ -28,9 +28,12 @@ const externalJqueryPlugin = {
 async function build() {
   const outJsDir = path.resolve(__dirname, 'datatables_listview/static/datatables_listview/js');
   const outCssDir = path.resolve(__dirname, 'datatables_listview/static/datatables_listview/css');
+  const outI18nDir = path.resolve(__dirname, 'datatables_listview/static/datatables_listview/i18n');
+  const i18nSrcDir = path.resolve(__dirname, 'node_modules/datatables.net-plugins/i18n');
 
   if (!fs.existsSync(outJsDir)) fs.mkdirSync(outJsDir, { recursive: true });
   if (!fs.existsSync(outCssDir)) fs.mkdirSync(outCssDir, { recursive: true });
+  if (!fs.existsSync(outI18nDir)) fs.mkdirSync(outI18nDir, { recursive: true });
 
   console.log('Building DataTables bundles...');
 
@@ -105,6 +108,18 @@ async function build() {
     banner: { css: banner },
   });
   console.log('✔ Generated: datatables.bs5.min.css');
+
+  // 4. DataTables language files (datatables.net-plugins) -> static/i18n
+  if (!fs.existsSync(i18nSrcDir)) {
+    throw new Error(
+      `Missing ${i18nSrcDir}. Run: npm install --save-dev datatables.net-plugins`
+    );
+  }
+  const i18nFiles = fs.readdirSync(i18nSrcDir).filter((file) => file.endsWith('.json'));
+  for (const file of i18nFiles) {
+    fs.copyFileSync(path.join(i18nSrcDir, file), path.join(outI18nDir, file));
+  }
+  console.log(`✔ Copied: ${i18nFiles.length} i18n language files`);
 
   console.log('All static assets compiled successfully!');
 }

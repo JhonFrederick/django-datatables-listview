@@ -11,5 +11,12 @@ INSTALLED_APPS = [
     "datatables_listview",
     "datatables_listview.tests",
 ]
+TEMPLATES = [
+    {
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "APP_DIRS": True,
+        "OPTIONS": {},
+    },
+]
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 USE_TZ = True

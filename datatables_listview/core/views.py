@@ -7,6 +7,7 @@ from django.urls import reverse
 from datatables_listview.core.constants import DatatableOrderConstants
 from datatables_listview.core.utils import (
     create_column_defs_list,
+    get_bootstrap_version,
     get_field_name,
     is_ajax,
     resolve_field_path,
@@ -32,10 +33,10 @@ class DatatablesListView:
     table_name = None
     show_buttons = False
     split_search = None
-    option_render_template_name = "datatables_listview/url_rendering_tool.html"
+    option_render_template_name = None
+    options_list_template_name = None
     default_column_order_index = 0
     default_column_order_direction = DatatableOrderConstants.ASCENDING
-    theme = "default"
     relation_search_fields = {}
 
     def __init__(self, *args, **kwargs):
@@ -50,6 +51,8 @@ class DatatablesListView:
                 "%(cls)s is missing a Model. Define %(cls)s.model"
                 % {"cls": self.__class__.__name__}
             )
+
+        get_bootstrap_version()  # Falla pronto si el setting no es válido
 
         self._validate_fields()
         self._define_fields()
@@ -247,7 +250,19 @@ class DatatablesListView:
             "confirm_modal": option_conf.get("confirm_modal"),
             "new_tab": option_conf.get("new_tab"),
         }
-        return self.option_render_template_name, context
+        template_name = self.option_render_template_name or self.get_pack_templates(
+            "url_rendering_tool.html"
+        )
+        return template_name, context
+
+    def get_pack_templates(self, filename):
+        """ Get template candidates for `filename`: first the one for the Bootstrap version configured
+        in settings and, if it doesn't exist, the generic one.
+        """
+        return [
+            f"datatables_listview/bootstrap{get_bootstrap_version()}/{filename}",
+            f"datatables_listview/{filename}",
+        ]
 
     def get_draw_params(self, request):
         start = int(request.GET.get("start", 0))
@@ -329,10 +344,13 @@ class DatatablesListView:
 
     def generate_rows_with_options(self, queryset):
         data = []
+        template_name = self.options_list_template_name or self.get_pack_templates(
+            "options_list_rendering_tool.html"
+        )
         for obj in queryset:
             row = self.get_obj_data(obj)
             options = render_to_string(
-                "datatables_listview/options_list_rendering_tool.html",
+                template_name,
                 {"urls": self.get_rendered_urls(obj)},
             )
             row.append(options)
@@ -464,6 +482,7 @@ class DatatablesListView:
         context["table_name"] = self.table_name
         context["show_buttons"] = self.show_buttons
         context["datatables_theme"] = getattr(self, "theme", "default")
+        context["bootstrap_version"] = get_bootstrap_version()
         context["default_column_order"] = [
             self.default_column_order_index,
             self.default_column_order_direction,

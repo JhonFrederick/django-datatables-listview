@@ -1,12 +1,13 @@
 from types import SimpleNamespace
 
 import pytest
-from django.core.exceptions import FieldDoesNotExist
+from django.core.exceptions import FieldDoesNotExist, ImproperlyConfigured
 
 from datatables_listview.core.utils import (
     Draw,
     arrayfield_keys_to_values,
     create_column_defs_list,
+    get_bootstrap_version,
     get_field_name,
     is_ajax,
     resolve_field_path,
@@ -32,6 +33,28 @@ class TestDraw:
             "draw",
             "filter",
         )
+
+
+class TestGetBootstrapVersion:
+    SETTING = "DATATABLES_LISTVIEW_BOOTSTRAP_VERSION"
+
+    def test_default_is_5_when_not_configured(self, settings):
+        if hasattr(settings, self.SETTING):
+            delattr(settings, self.SETTING)
+        assert get_bootstrap_version() == "5"
+
+    @pytest.mark.parametrize(
+        "value, expected", [("4", "4"), (4, "4"), ("5", "5"), (5, "5")]
+    )
+    def test_valid_values_are_returned_as_str(self, settings, value, expected):
+        setattr(settings, self.SETTING, value)
+        assert get_bootstrap_version() == expected
+
+    @pytest.mark.parametrize("value", ["3", "6", "bootstrap5", "", None])
+    def test_invalid_values_raise(self, settings, value):
+        setattr(settings, self.SETTING, value)
+        with pytest.raises(ImproperlyConfigured):
+            get_bootstrap_version()
 
 
 class TestIsAjax:

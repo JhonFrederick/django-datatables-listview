@@ -1,0 +1,30 @@
+<li class="d-flex align-items-center">
+  {% if confirm_modal %}
+    <a class="dropdown-item text-wrap" href="#"
+       data-toggle="modal" data-target="#{{ confirm_modal }}"
+       data-url="{{ url }}" onclick="urlModal(this, '{{ confirm_modal }}');">
+      {% if icon %}<i class="bi bi-{{ icon }}" aria-hidden="true"></i>{% endif %} {{ name }}
+    </a>
+  {% elif object_modal %}
+    <a class="dropdown-item" href="#"
+       data-toggle="modal" data-target="#{{ object_modal }}-{{ object.id }}">
+      {% if icon %}<i class="bi bi-{{ icon }}" aria-hidden="true"></i>{% endif %} {{ name }}
+    </a>
+  {% else %}
+    <a class="dropdown-item" href="{{ url }}"{% if new_tab %} target="_blank" rel="noopener noreferrer"{% endif %}>
+      {% if icon %}<i class="bi bi-{{ icon }}" aria-hidden="true"></i>{% endif %} {{ name }}
+    </a>
+  {% endif %}
+
+  {# TODO: Check tooltips #}
+  {% if tooltip %}
+    <i class="bi bi-question-circle add-tooltip px-2"
+       data-toggle="tooltip" title="{{ tooltip }}"></i>
+  {% endif %}
+
+  {% if object_modal and not confirm_modal %}
+    {% with "datatables_tools/"|add:object.get_model_name|lower|add:"_modal.html" as template_object %}
+      {% include template_object %}
+    {% endwith %}
+  {% endif %}
+</li>

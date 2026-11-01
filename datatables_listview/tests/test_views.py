@@ -335,3 +335,57 @@ class TestGenerateData:
         view = make_view(fields=["name", path])
         result = view.generate_data(make_request(column=1))
         assert len(result["data"]) == 3
+
+
+class TestBootstrapTemplates:
+    """Selection of templates according to DATATABLES_LISTVIEW_BOOTSTRAP_VERSION."""
+
+    SETTING = "DATATABLES_LISTVIEW_BOOTSTRAP_VERSION"
+
+    @pytest.mark.parametrize("version", ["4", "5"])
+    def test_pack_templates_follow_the_setting(self, settings, make_view, version):
+        setattr(settings, self.SETTING, version)
+        view = make_view(fields=["name"])
+        assert view.get_pack_templates("url_rendering_tool.html") == [
+            f"datatables_listview/bootstrap{version}/url_rendering_tool.html",
+            "datatables_listview/url_rendering_tool.html",
+        ]
+
+    def test_default_version_is_5(self, settings, make_view):
+        if hasattr(settings, self.SETTING):
+            delattr(settings, self.SETTING)
+        view = make_view(fields=["name"])
+        assert (
+            view.get_pack_templates("x.html")[0]
+            == "datatables_listview/bootstrap5/x.html"
+        )
+
+    def test_invalid_setting_fails_when_instantiating(self, settings, make_view):
+        setattr(settings, self.SETTING, "3")
+        with pytest.raises(ImproperlyConfigured):
+            make_view(fields=["name"])
+
+    @pytest.mark.parametrize("version", ["4", "5"])
+    def test_options_column_is_rendered_with_the_selected_pack(
+        self, data, settings, make_view, version
+    ):
+        setattr(settings, self.SETTING, version)
+        view = make_view(
+            fields=["name"],
+            options_list=[{"option_label": "Ver", "option_url": "x", "url_params": []}],
+        )
+        view.get_rendered_urls = lambda obj: []  # evita reverse() sin URLconf
+        rows = view.generate_rows_with_options(view.get_queryset())
+        toggle = "data-bs-toggle" if version == "5" else "data-toggle"
+        assert f'{toggle}="dropdown"' in rows[0][-1]
+
+    def test_explicit_template_names_win(self, data, settings, make_view):
+        setattr(settings, self.SETTING, "5")
+        view = make_view(
+            fields=["name"],
+            options_list=[{"option_label": "Ver", "option_url": "x", "url_params": []}],
+            options_list_template_name="datatables_listview/bootstrap4/options_list_rendering_tool.html",
+        )
+        view.get_rendered_urls = lambda obj: []
+        rows = view.generate_rows_with_options(view.get_queryset())
+        assert 'data-toggle="dropdown"' in rows[0][-1]

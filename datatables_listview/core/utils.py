@@ -1,6 +1,13 @@
 from collections import namedtuple
-from django.core.exceptions import FieldDoesNotExist, ObjectDoesNotExist
-from django.db import models
+from django.conf import settings
+from django.core.exceptions import (
+    FieldDoesNotExist,
+    ImproperlyConfigured,
+    ObjectDoesNotExist,
+)
+
+BOOTSTRAP_VERSIONS = ("4", "5")
+DEFAULT_BOOTSTRAP_VERSION = "5"
 
 Draw = namedtuple(
     "Draw", ["start", "end", "sort_column", "sort_order", "search", "draw", "filter"]
@@ -10,6 +17,26 @@ Draw = namedtuple(
 def is_ajax(request):
     """Check if the request was made via AJAX (XMLHttpRequest)."""
     return request.headers.get("x-requested-with") == "XMLHttpRequest"
+
+
+def get_bootstrap_version():
+    """
+    Return the Bootstrap version ("4" or "5") configured in
+    settings.DATATABLES_LISTVIEW_BOOTSTRAP_VERSION (default: "5").
+    """
+    version = str(
+        getattr(
+            settings,
+            "DATATABLES_LISTVIEW_BOOTSTRAP_VERSION",
+            DEFAULT_BOOTSTRAP_VERSION,
+        )
+    )
+    if version not in BOOTSTRAP_VERSIONS:
+        raise ImproperlyConfigured(
+            "DATATABLES_LISTVIEW_BOOTSTRAP_VERSION must be one of %(versions)s, "
+            "not %(value)r" % {"versions": BOOTSTRAP_VERSIONS, "value": version}
+        )
+    return version
 
 
 def get_field_name(field):
