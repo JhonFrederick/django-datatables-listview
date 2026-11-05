@@ -1,101 +1,139 @@
-(function () {
+(function (global) {
     'use strict';
 
-    function ready(fn) {
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', fn);
-        } else {
-            fn();
+    /**
+     * Server-side DataTable wired to a DatatablesListView.
+     *
+     * Every aspect of the configuration is a method, so behaviour can be changed by
+     * subclassing and overriding only what is needed. Initialization is up to the caller:
+     *
+     *   class MyTable extends DatatableListView {
+     *       getButtons() {
+     *           return super.getButtons().filter(function (b) { return b.extend !== 'pdf'; });
+     *       }
+     *   }
+     *   new MyTable(window.datatableListViewConfig).init();
+     */
+    class DatatableListView {
+        /**
+         * @param {Object} config
+         * @param {string} [config.selector='#datatable-view']
+         * @param {Array}  [config.columnDefs=[]]      Column definitions from the view
+         * @param {boolean} [config.showOptions=false] Adds the options column at the end
+         * @param {string} [config.optionsTitle='']    Title of the options column
+         * @param {Array}  [config.defaultOrder=[0, 'asc']]
+         * @param {string} [config.languageUrl]        DataTables language file URL
+         * @param {Array}  [config.buttons]            Replaces the default buttons
+         * @param {number} [config.pageLength=10]
+         * @param {number} [config.cachePages=5]       Pages cached by the pipeline
+         */
+        constructor(config) {
+            config = config || {};
+            this.selector = config.selector || '#datatable-view';
+            this.columnDefs = config.columnDefs || [];
+            this.showOptions = !!config.showOptions;
+            this.optionsTitle = config.optionsTitle || '';
+            this.defaultOrder = config.defaultOrder || [0, 'asc'];
+            this.languageUrl = config.languageUrl || null;
+            this.buttons = config.buttons || null;
+            this.pageLength = config.pageLength || 10;
+            this.cachePages = config.cachePages || 5;
+
+            this.table = null;     // DataTables API instance
+            this.filters = [];     // External filter elements ([data-table-filter])
+            this.tableUrl = '';    // Current URL; '' = current page. Changing it invalidates the cache
         }
-    }
 
-    // Read an optional global variable (declared with var, let or const) without throwing an error
-    function optionalGlobal(read) {
-        try {
-            var value = read();
-            return typeof value === 'undefined' ? null : value;
-        } catch (err) {
-            return null;
-        }
-    }
+        // ---- Configuration (override these to customize) -----------------------------------
 
-    ready(function () {
-
-        // ---- Optional configuration defined from the template -------------------------------
-        var userButtons = optionalGlobal(function () { return custom_buttons; });
-        var finalPageLength = optionalGlobal(function () { return custom_page_length; }) || 10;
-        var finalCachePages = optionalGlobal(function () { return custom_cache_pages; }) || 5;
-        // Todo: Add the possibility to define this buttons from the view
-        var finalButtons = userButtons || [
-            { extend: 'copy', exportOptions: { columns: ':not(:last)' }, text: 'Copy' },
-            { extend: 'csv', exportOptions: { columns: ':not(:last)' }, text: 'CSV' },
-            { extend: 'excel', exportOptions: { columns: ':not(:last)' }, text: 'Excel' },
-            { extend: 'pdf', exportOptions: { columns: ':not(:last)' }, text: 'PDF' },
-            {
-                extend: 'print',
-                customize: function (win) {
-                    var body = win.document.body;
-                    body.classList.add('white-bg');
-                    body.style.fontSize = '10px';
-
-                    body.querySelectorAll('table').forEach(function (table) {
-                        table.classList.add('compact');
-                        table.style.fontSize = 'inherit';
-                    });
-                },
-                exportOptions: { columns: ':not(:last)' },
-                text: 'Imprimir'
-            },
-            {
-                extend: 'colvis',
-                exportOptions: { columns: ':not(:last)' },
-                text: 'Mostrar/Ocultar columnas'
+        getColumns() {
+            var columns = this.columnDefs.slice();
+            if (this.showOptions) {
+                columns.push({
+                    title: this.optionsTitle,
+                    targets: columns.length,
+                    orderable: false,
+                    searchable: false,
+                    responsivePriority: 0
+                });
             }
-        ];
-
-        // ---- Column definition -------------
-        var columns = column_defs.slice();
-        if (options) {
-            columns.push({
-                title: title_column_options,
-                targets: columns.length,
-                orderable: false,
-                searchable: false,
-                responsivePriority: 0
-            });
+            return columns;
         }
 
-        // ---- Table ----------------------------------------------------------------------------
-        // Current URL of the table; the pipeline reads it in each draw. Change it (filters)
-        // invalidates the cache automatically. '' = current page.
-        var tableUrl = '';
+        getDefaultButtons() {
+            return [
+                { extend: 'copy', exportOptions: { columns: ':not(:last)' }, text: 'Copy' },
+                { extend: 'csv', exportOptions: { columns: ':not(:last)' }, text: 'CSV' },
+                { extend: 'excel', exportOptions: { columns: ':not(:last)' }, text: 'Excel' },
+                { extend: 'pdf', exportOptions: { columns: ':not(:last)' }, text: 'PDF' },
+                {
+                    extend: 'print',
+                    customize: function (win) {
+                        var body = win.document.body;
+                        body.classList.add('white-bg');
+                        body.style.fontSize = '10px';
 
-        var table = new DataTable('#datatable-view', {
-            dom: 'Br<"d-flex justify-content-between flex-wrap"lf>t<"d-flex justify-content-between flex-wrap"ip>',
-            responsive: true,
-            autoWidth: false,
-            pageLength: finalPageLength,
-            columnDefs: columns,
-            serverSide: true,
-            processing: true,
-            ajax: DataTable.pipeline({
-                url: function () { return tableUrl; },
-                pages: finalCachePages // Number of pages to cache
-            }),
-            buttons: finalButtons,
-            language: {
-                url: cdn_language
-            },
-            order: [default_column_order]
-        });
+                        body.querySelectorAll('table').forEach(function (table) {
+                            table.classList.add('compact');
+                            table.style.fontSize = 'inherit';
+                        });
+                    },
+                    exportOptions: { columns: ':not(:last)' },
+                    text: 'Print'
+                },
+                {
+                    extend: 'colvis',
+                    exportOptions: { columns: ':not(:last)' },
+                    text: 'Show/Hide columns'
+                }
+            ];
+        }
 
-        window.customDatatable = table;
-        table.table().header().classList.add('text-muted');
+        getButtons() {
+            return this.buttons || this.getDefaultButtons();
+        }
 
-        // ---- External filters -----------------------------------------------------------------
-        var filters = document.querySelectorAll('[data-table-filter]');
+        getDom() {
+            return 'Br<"d-flex justify-content-between flex-wrap"lf>t<"d-flex justify-content-between flex-wrap"ip>';
+        }
 
-        function filterValue(el) {
+        getPipelineUrl() {
+            var self = this;
+            return function () { return self.tableUrl; };
+        }
+
+        getOptions() {
+            return {
+                dom: this.getDom(),
+                responsive: true,
+                autoWidth: false,
+                pageLength: this.pageLength,
+                columnDefs: this.getColumns(),
+                serverSide: true,
+                processing: true,
+                ajax: DataTable.pipeline({
+                    url: this.getPipelineUrl(),
+                    pages: this.cachePages
+                }),
+                buttons: this.getButtons(),
+                language: { url: this.languageUrl },
+                order: [this.defaultOrder]
+            };
+        }
+
+        // ---- Lifecycle ----------------------------------------------------------------------
+
+        init() {
+            this.table = new DataTable(this.selector, this.getOptions());
+            global.customDatatable = this.table; // Backward compatibility
+            this.table.table().header().classList.add('text-muted');
+            this.bindFilters();
+            return this;
+        }
+
+        // ---- External filters ---------------------------------------------------------------
+
+        getFilterValue(el) {
             if (el.type === 'checkbox') {
                 return el.checked ? 'True' : '';
             }
@@ -105,27 +143,34 @@
             return el.value;
         }
 
-        function applyFilters() {
+        bindFilters() {
+            var self = this;
+            this.filters = Array.from(document.querySelectorAll('[data-table-filter]'));
+            this.filters.forEach(function (el) {
+                el.addEventListener('change', function () { self.applyFilters(); });
+                el.addEventListener('click', function () { self.applyFilters(); });
+            });
+        }
+
+        applyFilters() {
+            var self = this;
             var url = new URL(window.location.href);
             url.hash = '';
 
-            filters.forEach(function (el) {
+            this.filters.forEach(function (el) {
                 url.searchParams.append('column_only', el.getAttribute('name'));
-                url.searchParams.append('value_only', filterValue(el));
+                url.searchParams.append('value_only', self.getFilterValue(el));
             });
 
             var newUrl = url.toString();
-            if (newUrl === tableUrl) {
+            if (newUrl === this.tableUrl) {
                 return; // nothing changed: avoid repeated requests by "click"
             }
 
-            tableUrl = newUrl;
-            table.clearPipeline().draw(); // Return to first page
+            this.tableUrl = newUrl;
+            this.table.clearPipeline().draw(); // Return to first page
         }
+    }
 
-        filters.forEach(function (el) {
-            el.addEventListener('change', applyFilters);
-            el.addEventListener('click', applyFilters);
-        });
-    });
-})();
+    global.DatatableListView = DatatableListView;
+})(window);
