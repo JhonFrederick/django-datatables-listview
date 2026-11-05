@@ -27,6 +27,7 @@ import 'datatables.net-colreorder-bs4';
 import 'datatables.net-responsive-bs4';
 import 'datatables.net-rowreorder-bs4';
 import 'datatables.net-select-bs4';
+import 'datatables.net-columncontrol-bs4';
 
 globalObj.DataTable = DataTable;
 

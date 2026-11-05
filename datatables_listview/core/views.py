@@ -44,7 +44,7 @@ class DatatablesListView:
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._fields = None
-        self.show_options = bool(self.options_list) and self.show_options
+        self.show_options = bool(self.get_options_list()) and self.show_options
         self.fields_data = {}
         self._fields_definition = {}
 

@@ -11,5 +11,12 @@
     const title_column_options = "{% trans 'Options' %}";
     let default_column_order  = JSON.parse(document.getElementById('default-column-order').textContent);
 </script>
+
+<script type="text/javascript" src="{% static 'datatables_listview/js/datatables.min.js' %}"></script>
+{% if bootstrap_version == '5' %}
+<script type="text/javascript" src="{% static 'datatables_listview/js/datatables.bs5.min.js' %}"></script>
+{% elif bootstrap_version == '4' %}
+<script type="text/javascript" src="{% static 'datatables_listview/js/datatables.bs4.min.js' %}"></script>
+{% endif %}
 <script type="text/javascript" src="{% static 'datatables_listview/js/datatables_pipeline.js' %}"></script>
 <script type="text/javascript" src="{% static 'datatables_listview/js/generate_datatable.js' %}"></script>

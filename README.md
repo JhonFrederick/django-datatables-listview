@@ -16,8 +16,6 @@ A DataTables Django server-side scripting implementation.
   - **Default DataTables** styling
   - **Bootstrap 4** styling (`bootstrap4` / `bs4`)
   - **Bootstrap 5** styling (`bootstrap5` / `bs5`)
-- Zero Node.js runtime requirement for Django end-users (all static files are pre-compiled and packaged).
-- Modern NPM + esbuild workflow for developers/maintainers to update frontend libraries easily.
 
 ---
 
